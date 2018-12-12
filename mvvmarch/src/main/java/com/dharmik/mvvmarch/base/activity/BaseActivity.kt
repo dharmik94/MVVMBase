@@ -31,6 +31,7 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding>(private va
         DataBindingUtil.setContentView(this, getLayoutRes()) as DB
     }
 
+
     protected fun <T : BaseViewModel> getViewModel(clazz: Class<T>, viewModelFactory: ViewModelProvider.Factory): T {
         return ViewModelProviders.of(this, viewModelFactory)
                 .get(clazz)
