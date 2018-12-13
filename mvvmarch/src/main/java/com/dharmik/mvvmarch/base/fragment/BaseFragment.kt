@@ -1,13 +1,13 @@
 package com.dharmik.mvvmarch.base.fragment
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.databinding.DataBindingUtil
 import android.databinding.ViewDataBinding
 import android.os.Bundle
 import android.support.annotation.LayoutRes
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,10 +15,9 @@ import android.view.ViewGroup
 import com.dharmik.mvvmarch.base.activity.BaseActivity
 import com.dharmik.mvvmarch.base.activity.IBaseActivity
 import com.dharmik.mvvmarch.base.viewmodel.BaseViewModel
+import com.dharmik.mvvmarch.utils.SnackbarMessage
 
 abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding>(private val mViewModelClass: Class<VM>) : Fragment(),IBaseActivity {
-
-    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     var binding: DB? = null
         private set
@@ -27,7 +26,7 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding>(private va
     private var mRootView: View? = null
 
     private fun getViewModel(viewmodel: Class<VM>): VM {
-        return ViewModelProviders.of(this, viewModelFactory).get(viewmodel)
+        return ViewModelProviders.of(this).get(viewmodel)
     }
 
     val viewModel by lazy {
@@ -101,6 +100,11 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding>(private va
 
     private fun registerUIChangeLiveDataCallBack() {
         viewModel.let {
+            it.snackbarMessage.observe(this,
+                { message: String ->
+                    mRootView?.let { Snackbar.make(it, message, Snackbar.LENGTH_SHORT).show() }
+                } as SnackbarMessage.SnackbarObserver)
+
             it.getUC().getShowProgressLiveData().observe(this, Observer<Boolean> {
 
             })

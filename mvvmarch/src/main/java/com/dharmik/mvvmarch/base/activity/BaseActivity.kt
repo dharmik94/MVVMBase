@@ -11,6 +11,7 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.LayoutRes
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.transition.Explode
@@ -18,11 +19,11 @@ import android.transition.Transition
 import android.view.View
 import com.dharmik.mvvmarch.base.fragment.BaseFragment
 import com.dharmik.mvvmarch.base.viewmodel.BaseViewModel
+import com.dharmik.mvvmarch.utils.SnackbarMessage
 
-abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding>(private val mViewModelClass: Class<VM>)
-    : AppCompatActivity(), BaseFragment.Callback,IBaseActivity {
 
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding>(private val mViewModelClass: Class<VM>) :
+    AppCompatActivity(), BaseFragment.Callback, IBaseActivity {
 
     @LayoutRes
     abstract fun getLayoutRes(): Int
@@ -31,14 +32,8 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding>(private va
         DataBindingUtil.setContentView(this, getLayoutRes()) as DB
     }
 
-
-    protected fun <T : BaseViewModel> getViewModel(clazz: Class<T>, viewModelFactory: ViewModelProvider.Factory): T {
-        return ViewModelProviders.of(this, viewModelFactory)
-                .get(clazz)
-    }
-
     private fun getViewModel(viewmodel: Class<VM>): VM {
-        return ViewModelProviders.of(this, viewModelFactory).get(viewmodel)
+        return ViewModelProviders.of(this).get(viewmodel)
     }
 
     val viewModel by lazy {
@@ -81,6 +76,11 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding>(private va
     }
 
     private fun registerUIChangeLiveDataCallBack() {
+       /* viewModel.snackbarMessage.observe(this,
+            { message: String ->
+                Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+            } as SnackbarMessage.SnackbarObserver)*/
+
         viewModel.let {
             it.getUC().getShowProgressLiveData().observe(this, Observer<Boolean> {
 
@@ -89,11 +89,6 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding>(private va
 
             })
         }
-
-    }
-
-    override fun onError(message: String) {
-        //toast error
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -110,10 +105,10 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding>(private va
 
     fun getLastNotNull(list: List<Fragment>): Fragment? {
         list.indices.reversed()
-                .map { list[it] }
-                .forEach {
-                    return it
-                }
+            .map { list[it] }
+            .forEach {
+                return it
+            }
         return null
     }
 
@@ -127,7 +122,7 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding>(private va
      *
      * @param name fragment to be shown
      */
-    fun showFragment(name: Fragment,layout : Int) {
+    fun showFragment(name: Fragment, layout: Int) {
         val fragmentManager = supportFragmentManager
         // check if the fragment is in back stack
         val fragmentTransaction = fragmentManager.beginTransaction()
@@ -144,7 +139,7 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding>(private va
      * @param sharedView view which show the transition
      *
      */
-    fun showFragmentWithTransition(current: Fragment, newFragment: Fragment, sharedView: View,layout : Int) {
+    fun showFragmentWithTransition(current: Fragment, newFragment: Fragment, sharedView: View, layout: Int) {
         val fragmentManager = supportFragmentManager
         // check if the fragment is in back stack
         val fragmentPopped = fragmentManager.popBackStackImmediate(newFragment.javaClass.name, 0)
@@ -188,7 +183,7 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding>(private va
      *
      */
 
-    fun showFragmentWithOutTransition(newFragment: Fragment,layout : Int) {
+    fun showFragmentWithOutTransition(newFragment: Fragment, layout: Int) {
         val fragmentManager = supportFragmentManager
         // check if the fragment is in back stack
         val fragmentPopped = fragmentManager.popBackStackImmediate(newFragment.javaClass.name, 0)
@@ -211,7 +206,8 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding>(private va
         if (supportFragmentManager.backStackEntryCount == 0) {
             return null
         }
-        val fragmentTag = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
+        val fragmentTag =
+            supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
         return supportFragmentManager.findFragmentByTag(fragmentTag)
     }
 

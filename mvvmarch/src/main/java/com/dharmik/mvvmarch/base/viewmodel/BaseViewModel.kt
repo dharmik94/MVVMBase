@@ -4,11 +4,21 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.arch.lifecycle.*
 import android.content.Context
+import com.dharmik.mvvmarch.utils.SnackbarMessage
 
 
 abstract class BaseViewModel(application: Application) : AndroidViewModel(application), IBaseViewModel {
 
     private var uc: UIChangeLiveData? = null
+    open val snackbarMessage = SnackbarMessage()
+
+    fun showSnackbar(message: String) {
+        snackbarMessage.value = message
+    }
+
+    fun showSnackbarBackground(message: String) {
+        snackbarMessage.postValue(message)
+    }
 
     protected fun getAppContext(): Context = getApplication<Application>().applicationContext
 
