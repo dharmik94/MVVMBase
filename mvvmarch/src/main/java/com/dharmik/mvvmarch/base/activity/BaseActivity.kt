@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
 import android.databinding.ViewDataBinding
+import android.graphics.Color
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
@@ -20,6 +21,9 @@ import android.view.View
 import com.dharmik.mvvmarch.base.fragment.BaseFragment
 import com.dharmik.mvvmarch.base.viewmodel.BaseViewModel
 import com.dharmik.mvvmarch.utils.SnackbarMessage
+import android.view.WindowManager
+
+
 
 
 abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding>(private val mViewModelClass: Class<VM>) :
@@ -215,5 +219,37 @@ abstract class BaseActivity<VM : BaseViewModel, DB : ViewDataBinding>(private va
         super.onDestroy()
         lifecycle.removeObserver(viewModel)
         binding.unbind()
+    }
+
+    fun setTranslucentStatusBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.statusBarColor = Color.TRANSPARENT
+
+            setFullScreen()
+        }
+    }
+
+    fun setLightStatusBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        }
+    }
+
+    fun setFullScreen() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        }
+    }
+
+    fun setStatusBarColor(color: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.statusBarColor = color
+        }
     }
 }

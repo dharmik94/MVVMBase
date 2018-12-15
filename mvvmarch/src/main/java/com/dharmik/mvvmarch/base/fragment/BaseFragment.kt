@@ -7,7 +7,6 @@ import android.databinding.DataBindingUtil
 import android.databinding.ViewDataBinding
 import android.os.Bundle
 import android.support.annotation.LayoutRes
-import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,6 @@ import android.view.ViewGroup
 import com.dharmik.mvvmarch.base.activity.BaseActivity
 import com.dharmik.mvvmarch.base.activity.IBaseActivity
 import com.dharmik.mvvmarch.base.viewmodel.BaseViewModel
-import com.dharmik.mvvmarch.utils.SnackbarMessage
 
 abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding>(private val mViewModelClass: Class<VM>) : Fragment(),IBaseActivity {
 
@@ -100,11 +98,11 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding>(private va
 
     private fun registerUIChangeLiveDataCallBack() {
         viewModel.let {
-            it.snackbarMessage.observe(this,
+           /* it.snackbarMessage.observe(this,
                 { message: String ->
                     mRootView?.let { Snackbar.make(it, message, Snackbar.LENGTH_SHORT).show() }
                 } as SnackbarMessage.SnackbarObserver)
-
+*/
             it.getUC().getShowProgressLiveData().observe(this, Observer<Boolean> {
 
             })
